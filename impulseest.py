@@ -39,7 +39,14 @@ def impulseest(u, y, n=100, RegularizationKernel='none'):
     p = 0.5
     sig = std(ir_ls)/2
     
-    alpha_init = create_alpha(RegularizationKernel,c,l,p)
+
+    if(RegularizationKernel=='DC'):
+        alpha_init = array([c,l,p])
+    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
+        alpha_init = array([c,l])
+    elif(RegularizationKernel=='CS'):
+        alpha_init = array([c])
+
     bnds = create_bounds(RegularizationKernel)
 
     def Prior(alpha):   
@@ -69,26 +76,14 @@ def impulseest(u, y, n=100, RegularizationKernel='none'):
         return (transpose(Y) @ pinv((transpose(Phi) @ Prior(alpha) @ Phi + (sig**2)*I)) @ Y + _slogdet(alpha)).flatten()
 
     if(RegularizationKernel!='none'):
-        A = minimize(ML, alpha_init, method='SLSQP', bounds=bnds)
-        alpha = A.x
-        ir = Prior(alpha) @ Phi @ pinv((transpose(Phi) @ Prior(alpha) @ Phi + (sig**2)*I)) @ Y
+            A = minimize(ML, alpha_init, method='SLSQP', options={'ftol': 1e-6}, bounds=bnds)
+            alpha = A.x
+            ir = Prior(alpha) @ Phi @ pinv((transpose(Phi) @ Prior(alpha) @ Phi + (sig**2)*I)) @ Y
     else:
         ir = ir_ls
 
-    return ir,alpha
-
-def create_alpha(RegularizationKernel,c,l,p):
-    if(RegularizationKernel=='DC'):
-        a = array([c,l,p])
-        return a
-    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
-        a = array([c,l])
-        return a
-    elif(RegularizationKernel=='CS'):
-        a = array([c])
-        return a
-    elif(RegularizationKernel=='none'):
-        return None
+    ir = ir.reshape(len(ir),1)
+    return ir
 
 def create_bounds(RegularizationKernel):
     if(RegularizationKernel=='DC'):

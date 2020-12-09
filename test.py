@@ -57,10 +57,8 @@ y = y + ny
 #ir-------------------------------------------------------------
 #---------------------------------------------------------------
 
-ir,alpha = impulseest(u,y,n=200,RegularizationKernel='DC')
-t,G_h = ss.dimpulse(G, n=200)
-
-print(alpha)
+ir = impulseest(u,y,n=100,RegularizationKernel='DC')
+t,G_h = ss.dimpulse(G, n=100)
 
 plt.figure(1)
 plt.plot(np.squeeze(G_h),color='C0')
