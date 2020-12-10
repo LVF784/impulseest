@@ -1,7 +1,0 @@
-README.md
-setup.py
-impulseest/__init__.py
-pyimpulseest_LVF784.egg-info/PKG-INFO
-pyimpulseest_LVF784.egg-info/SOURCES.txt
-pyimpulseest_LVF784.egg-info/dependency_links.txt
-pyimpulseest_LVF784.egg-info/top_level.txt
