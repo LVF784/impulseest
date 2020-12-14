@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pyimpulseest-LVF784", # Replace with your own username
+    name="impulseest", # Replace with your own username
     version="0.0.1",
     author="Luan Vinícius Fiorio",
     author_email="vfluan@gmail.com",
