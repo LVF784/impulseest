@@ -4,9 +4,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="impulseest", # Replace with your own username
+    name="impulseestest", # Replace with your own username
     version="0.0.1",
-    author="Luan Vinícius Fiorio",
+    author="Luan V. Fiorio",
     author_email="vfluan@gmail.com",
     description="Nonparametric impulse response estimation",
     long_description=long_description,
