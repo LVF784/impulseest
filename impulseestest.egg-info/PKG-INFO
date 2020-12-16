@@ -1,9 +1,9 @@
 Metadata-Version: 2.1
-Name: impulseest-test
-Version: 0.0.1
+Name: impulseestest
+Version: 0.0.4
 Summary: Nonparametric impulse response estimation
 Home-page: https://github.com/LVF784/impulseest
-Author: Luan Vinícius Fiorio
+Author: Luan V. Fiorio
 Author-email: vfluan@gmail.com
 License: UNKNOWN
 Description: # impulseest() is a nonparametric impulse response estimation function
@@ -15,7 +15,7 @@ Description: # impulseest() is a nonparametric impulse response estimation funct
         This arguments are described as follows:
         - each of input and output data arrays must be an N x 1 or 1 x N array. Both must have the same length; 
         - the number of impulse response estimates is chosen arbitrarly, with default value of n = 100; 
-        - there are four regularization kernels to be chosen ('DC', 'DI', 'TC', 'CS') and a 'none' option. If you choose 'none', the function returns the impulse response estimated by least squares with no regularization. The default choice is 'none'.
+        - there are four regularization kernels to be chosen ('DC', 'DI', 'TC', 'SS') and a 'none' option. If you choose 'none', the function returns the impulse response estimated by least squares with no regularization. The default choice is 'none'.
         
         ## Importing function
         
