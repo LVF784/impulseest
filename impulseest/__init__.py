@@ -106,10 +106,13 @@ def create_alpha(RegularizationKernel):
 
 def create_bounds(RegularizationKernel):
     if(RegularizationKernel=='DC'):
-        bnds = ((1e-12, None), (0, 1), (None,1),)
+        bnds = ((1e-12, None), (0.72, 0.99), (-0.99, 0.99))
         return bnds
-    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC' or RegularizationKernel=='SS'):
-        bnds = ((1e-12, None), (0, 1),)
+    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
+        bnds = ((1e-12, None), (0.7, 0.99))
+        return bnds
+    elif(RegularizationKernel=='SS'):
+        bnds = ((1e-12, None), (0.9, 0.99))
         return bnds
     elif(RegularizationKernel=='none'):
         return None
