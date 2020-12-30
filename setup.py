@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="impulseestest", # Replace with your own username
-    version="0.0.4",
+    version="0.0.6",
     author="Luan V. Fiorio",
     author_email="vfluan@gmail.com",
     description="Nonparametric impulse response estimation",
@@ -18,5 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8',
+    python_requires='>=3',
 )
