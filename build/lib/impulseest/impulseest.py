@@ -136,7 +136,7 @@ def create_Y(y,n,N):
 def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
     if(PreFilter!='none' and RegularizationKernel!='none'):
         raise Exception("Prewhitening filter can only be used in the non-regularized estimation.")
-        
+    
     if(len(u)!=len(y)):
         raise Exception("u and y must have the same size.")
 
@@ -146,7 +146,7 @@ def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
     if(RegularizationKernel not in ['DC','DI','TC','SS','none']):
         raise Exception("the chosen regularization kernel is not valid.")
 
-    if(PreFilter not in ['zca', 'pca', 'cholesky', 'pca-cor', 'zca-cor', 'none']):
+    if(PreFilter not in ['zca', 'pca', 'cholesky', 'pca_cor', 'zca_cor', 'none']):
         raise Exception("the chosen prewhitening method is not valid.")
 
     if(MinimizationMethod not in ['Powell', 'TNC', 'L-BFGS-B']):
@@ -174,7 +174,7 @@ def whitening_matrix(X, assume_centered=False, method='cholesky', fudge=1e-8):
         elif method == 'pca':
             W = invsqrt_sigma @ U.T
         elif method == 'cholesky':
-            W = cholesky(U @ diag(1.0 / sigma) @ U.T, lower=True)
+            W = cholesky(U @ diag(1.0 / sigma) @ U.T,)
     elif method in ['zca_cor', 'pca_cor']:
         stds = sqrt(diag(cov))
         corr = cov / outer(stds, stds)
