@@ -1,1 +1,1 @@
-from .impulseest import *
+from .impulseest import impulseest

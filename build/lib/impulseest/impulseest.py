@@ -24,7 +24,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod)
 
     if(PreFilter!='none'):
-        x = whiten(x,method=PreFilter)
+        u = whiten(u,method=PreFilter)
         y = whiten(y,method=PreFilter)
 
     Phi = create_Phi(u,n,N)
@@ -109,13 +109,13 @@ def create_alpha(RegularizationKernel):
 
 def create_bounds(RegularizationKernel):
     if(RegularizationKernel=='DC'):
-        bnds = ((1e-3, None), (0.72, 0.99), (-0.99, 0.99))
+        bnds = ((1e-8, None), (0.72, 0.99), (-0.99, 0.99))
         return bnds
     elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
-        bnds = ((1e-3, None), (0.7, 0.99))
+        bnds = ((1e-8, None), (0.7, 0.99))
         return bnds
     elif(RegularizationKernel=='SS'):
-        bnds = ((1e-3, None), (0.9, 0.99))
+        bnds = ((1e-8, None), (0.9, 0.99))
         return bnds
     elif(RegularizationKernel=='none'):
         return None
