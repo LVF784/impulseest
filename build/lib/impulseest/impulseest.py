@@ -21,11 +21,11 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     y = y.reshape(len(y),1)
     N = len(y)
     
-    argument_check(u,y,n,N,PreFilter,RegularizationKernel)
+    argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod)
 
     if(PreFilter!='none'):
-        x = whiten(x)
-        y = whiten(y)
+        x = whiten(x,method=PreFilter)
+        y = whiten(y,method=PreFilter)
 
     Phi = create_Phi(u,n,N)
     Y = create_Y(y,n,N)
@@ -133,7 +133,7 @@ def create_Y(y,n,N):
         Y[i,0] = y[n+i]
     return Y
 
-def argument_check(u,y,n,N,PreFilter,RegularizationKernel):
+def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
     if(PreFilter!='none' and RegularizationKernel!='none'):
         raise Exception("Prewhitening filter can only be used in the non-regularized estimation.")
         
@@ -154,7 +154,7 @@ def argument_check(u,y,n,N,PreFilter,RegularizationKernel):
 
     return None
 
-def whitening_matrix(X, assume_centered=False, method=PreFilter, fudge=1e-8):
+def whitening_matrix(X, assume_centered=False, method='cholesky', fudge=1e-8):   
     # Make sure data is n_samples x n_features
     X = X.reshape((-1, prod(X.shape[1:])))
 
@@ -191,7 +191,7 @@ def whitening_matrix(X, assume_centered=False, method=PreFilter, fudge=1e-8):
     return W
 
 
-def whiten(X, assume_centered=False, method=PreFilter, fudge=1e-8):
+def whiten(X, assume_centered=False, method='cholesky', fudge=1e-8):
     # Center
     X_centered = X
     if not assume_centered:
