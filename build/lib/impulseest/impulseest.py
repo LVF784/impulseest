@@ -74,7 +74,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
         R = qr(to_qr,mode='r')
         R1 = R[0:n,0:n]
         r = R[n,n]
-        cost = (r**2)/(sig**2) + (N-n)*log(sig**2) + 2*log(det(R1))
+        cost = (r**2)/(sig**2) + (N-n)*log(sig**2) + 2*log(det(R1)+1e-8)
         return cost
 
     #minimize cost function to estimate the impulse response

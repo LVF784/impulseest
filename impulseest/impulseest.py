@@ -115,7 +115,7 @@ def create_bounds(RegularizationKernel):
         bnds = ((1e-8, None), (0.7, 0.99))
         return bnds
     elif(RegularizationKernel=='SS'):
-        bnds = ((1e-3, None), (0.9, 0.99))
+        bnds = ((1e-8, None), (0.9, 0.99))
         return bnds
     elif(RegularizationKernel=='none'):
         return None
