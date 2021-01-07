@@ -53,11 +53,6 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
                         P[k,j] = 0
                 elif(RegularizationKernel=='TC'):
                     P[k,j] = alpha[0]*min(alpha[1]**j,alpha[1]**k)
-                elif(RegularizationKernel=='SS'):
-                    if(k>=j):
-                        P[k,j] = alpha[0]*((alpha[1]**(2*k))/2)*(alpha[1]**j - ((alpha[1]**(k))/3))
-                    else:
-                        P[k,j] = alpha[0]*((alpha[1]**(2*j))/2)*(alpha[1]**k - ((alpha[1]**(j))/3))
                     None            
         return P
 
@@ -101,7 +96,7 @@ def create_alpha(RegularizationKernel):
     if(RegularizationKernel=='DC'):
         alpha_init = array([c,l,p])
         return alpha_init
-    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC' or RegularizationKernel=='SS'):
+    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
         alpha_init = array([c,l])     
         return alpha_init         
     elif(RegularizationKernel=='none'):
@@ -113,9 +108,6 @@ def create_bounds(RegularizationKernel):
         return bnds
     elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
         bnds = ((1e-8, None), (0.7, 0.99))
-        return bnds
-    elif(RegularizationKernel=='SS'):
-        bnds = ((1e-6, None), (0.9, 0.99))
         return bnds
     elif(RegularizationKernel=='none'):
         return None
@@ -143,7 +135,7 @@ def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
     if(n>=N):
         raise Exception("n must be at least 1 sample smaller than the length of the signals.")
 
-    if(RegularizationKernel not in ['DC','DI','TC','SS','none']):
+    if(RegularizationKernel not in ['DC','DI','TC','none']):
         raise Exception("the chosen regularization kernel is not valid.")
 
     if(PreFilter not in ['zca', 'pca', 'cholesky', 'pca_cor', 'zca_cor', 'none']):
