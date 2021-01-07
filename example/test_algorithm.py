@@ -115,7 +115,7 @@ for y in y_list:
     t,G_h = ss.dimpulse(G, n=100)
     ir_real = np.squeeze(G_h)
 
-    for reg in ['DC','DI','TC','SS']:
+    for reg in ['DC','DI','TC']:
         
         start_time = time.time()
         ir_est = impulseest(u,y,n=100,RegularizationKernel=reg)
