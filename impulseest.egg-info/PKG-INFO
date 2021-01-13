@@ -1,0 +1,35 @@
+Metadata-Version: 2.1
+Name: impulseest
+Version: 0.1.1
+Summary: Nonparametric impulse response estimation
+Home-page: https://github.com/LVF784/impulseest
+Author: Luan V. Fiorio
+Author-email: vfluan@gmail.com
+License: UNKNOWN
+Description: # impulseest() is a nonparametric impulse response estimation function
+        
+        As the variance increases linearly with the finite impulse response (FIR) model order, it is important for higher order FIR models to counteract this by regularizing the estimative. In impulseest(), this is done as proposed in T. Chen et al [2012] by the Empirical Bayes method (Carlin and Louis [1996]). The prewhitening filter is applied according to A. Kessy et al [2015].
+        
+        The six arguments in this function are: <br />
+            - u [numpy array]: input signal (size Nx1); <br />
+            - y [numpy array]: output signal (size Nx1); <br />
+            - n [int]: number of impulse response estimates (default is n=100); <br />
+            - RegularizationKernel [str]: regularization method ('DC','DI','TC', default is 'none'); <br />
+            - PreFilter [str]: prewhitening filter method ('zca', 'pca', 'cholesky', 'pca_cor', 'zca_cor', default is 'none'); <br />
+            - MinimizationMethod [str]: bound-constrained optimization method used to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
+        
+        ## Importing function
+        
+        ```
+        from impulseest import impulseest
+        ```
+        
+        ## Contributor
+        
+        Luan Vinícius Fiorio - vfluan@gmail.com
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3
+Description-Content-Type: text/markdown
