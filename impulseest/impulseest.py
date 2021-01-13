@@ -1,6 +1,9 @@
-from numpy import zeros, identity, transpose, std, array, hstack, bmat, log, vstack, array, prod, mean, diag, sign, sqrt, outer, cov
-from numpy.linalg import pinv, slogdet, cholesky, qr, det, svd 
+from numpy import zeros, identity, transpose, std, hstack, bmat, log
+from numpy.linalg import pinv, qr, det, cholesky
 from scipy.optimize import minimize
+
+from impulseest.creation import create_alpha, create_bounds, create_Phi, create_Y
+from impulseest.whiten import whiten
 
 def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', MinimizationMethod='L-BFGS-B'):
     """Nonparametric impulse response estimation function
@@ -96,46 +99,6 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     ir = ir.reshape(len(ir),1)
     return ir
 
-#function that creates alpha according to the chosen regularization kernel
-def create_alpha(RegularizationKernel):
-    l = 0.8
-    p = 0.5
-    c = 1     
-    if(RegularizationKernel=='DC'):
-        alpha_init = array([c,l,p])
-        return alpha_init
-    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
-        alpha_init = array([c,l])     
-        return alpha_init         
-    elif(RegularizationKernel=='none'):
-        return None
-
-#function to create the bounds of the minimization according to the chosen regularization kernel
-def create_bounds(RegularizationKernel):
-    if(RegularizationKernel=='DC'):
-        bnds = ((1e-8, None), (0.72, 0.99), (-0.99, 0.99))
-        return bnds
-    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
-        bnds = ((1e-8, None), (0.7, 0.99))
-        return bnds
-    elif(RegularizationKernel=='none'):
-        return None
-
-#function to create the Phi regressor matrix
-def create_Phi(u,n,N):
-    Phi = zeros((n,N-n))
-    for i in range(n):
-        for j in range(N-n):
-            Phi[i,j] = u[n+j-i]
-    return Phi
-
-#functino to create the Y regressor vector
-def create_Y(y,n,N):
-    Y = zeros((N-n,1))
-    for i in range(N-n):
-        Y[i,0] = y[n+i]
-    return Y
-
 #function to check all the arguments entered by the user, raising execption if something is wrong
 def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
     if(PreFilter!='none' and RegularizationKernel!='none'):
@@ -157,49 +120,3 @@ def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
         raise Exception("the chosen minimization method is not valid. Check scipy.minimize.optimize documentation for bound-constrained methods.")
 
     return None
-
-def whiten(x, method='cholesky'):
-    """Prewhitening of a discrete-time signal
-
-    This function applies what is proposed in A. Kessy et al (2015)
-    to whiten a discrete-time signal. The inputs are:
-    - x [numpy array]: discrete-time signal (size Nx1);
-    - method [str]: method used to create the W matrix, available options
-    are: 'zca', 'pca', 'cholesky', 'zca_cor', 'pca_cor'.
-    """
-    x = x.reshape((-1, prod(x.shape[1:])))
-    x = x - mean(x)
-    W = create_whiteningmatrix(x, method=method)
-    z = x @ W.T
-    z = z.reshape(x.shape)
-    
-    return z
-
-#function to create the whitening matrix according to A. Kessy et al (2015)
-def create_whiteningmatrix(x, method='cholesky'):   
-    covx = x.T @ x / len(x)
-
-    if method in ['zca', 'pca', 'cholesky']:
-        U, sigma, _ = svd(covx)
-        U = U @ diag(sign(diag(U)))
-        invsqrt_sigma = diag(1.0 / sqrt(sigma + 1e-8))
-        if method == 'zca':
-            W = U @ invsqrt_sigma @ U.T
-        elif method == 'pca':
-            W = invsqrt_sigma @ U.T
-        elif method == 'cholesky':
-            W = cholesky(U @ diag(1.0 / sigma) @ U.T,)
-    elif method in ['zca_cor', 'pca_cor']:
-        stds = sqrt(diag(covx))
-        corr = covx / outer(stds, stds)
-        G, theta, _ = svd(corr)
-        G = G @ diag(sign(diag(G)))
-        invsqrt_theta = diag(1.0 / sqrt(theta + 1e-8))
-        if method == 'zca_cor':
-            W = G @ invsqrt_theta @ G.T @ diag(1 / stds)
-        elif method == 'pca_cor':
-            W = invsqrt_theta @ G.T @ diag(1 / stds)
-    else:
-        raise Exception("Unvalid whitening method.")
-
-    return W

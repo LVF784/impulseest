@@ -129,7 +129,7 @@ for y in y_list:
         summer = np.sum(square)
         mse = (1/len(ir_est))*summer        
         
-        print("An MSE of {} was obtained using {} kernel." .format(mse,reg))
+        print("An MSE of {} was obtained using {} kernel and it took {:2f} seconds." .format(mse,reg,(end_time-start_time)))
 
 #unregularized estimation test
 print("\n")
