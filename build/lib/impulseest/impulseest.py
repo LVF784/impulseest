@@ -1,4 +1,4 @@
-from numpy import zeros, identity, transpose, std, array, hstack, bmat, log, vstack, array, prod, mean, diag, sign, sqrt, outer
+from numpy import zeros, identity, transpose, std, array, hstack, bmat, log, vstack, array, prod, mean, diag, sign, sqrt, outer, cov
 from numpy.linalg import pinv, slogdet, cholesky, qr, det, svd 
 from scipy.optimize import minimize
 
@@ -17,17 +17,20 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     - MinimizationMethod: bound-constrained optimization method use to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
    """
 
-    
+    #make sure u and y are shaped correctly
     u = u.reshape(len(u),1)
     y = y.reshape(len(y),1)
-    N = len(y)
+    N = len(y)  #length of input-output vectors
     
+    #check the arguments entered by the user, raise exceptions if something is wrong
     argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod)
 
+    #if PreFilter is selected, then apply prewhitening filtering to u and y
     if(PreFilter!='none'):
         u = whiten(u,method=PreFilter)
         y = whiten(y,method=PreFilter)
 
+    #arrange the regressors to least-squares according to T. Chen et al (2012)
     Phi = create_Phi(u,n,N)
     Y = create_Y(y,n,N)
     
@@ -35,13 +38,15 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     ir_ls = pinv(Phi @ transpose(Phi)) @ Phi @ Y    
 
     #initialize variables for hyper-parameter estimation
-    I = identity(n)
-    sig = std(ir_ls)
-    P = zeros((n,n))  
+    I = identity(n)         #identitity matrix
+    sig = std(ir_ls)        #sigma = standard deviation of the LS solution
+    P = zeros((n,n))        #zero matrix
 
+    #initialize alpha and choose bounds according to the chosen regularization kernel
     alpha_init = create_alpha(RegularizationKernel)
     bnds = create_bounds(RegularizationKernel)
 
+    #function to create the regularization matrix
     def Prior(alpha):   
         for k in range(n):
             for j in range(n):
@@ -57,12 +62,13 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
                     None            
         return P
 
-    #precomputation for cost function (algorithm2)
+    #precomputation for the Algorithm 2 according to T. Chen, L. Ljung (2013)
     aux0 = qr(hstack((transpose(Phi),Y)),mode='r')
     Rd1 = aux0[0:n+1,0:n]
     Rd2 = aux0[0:n+1,n]
     Rd2 = Rd2.reshape(len(Rd2),1)
 
+    #cost function written as the Algorithm 2 presented in T. Chen, L. Ljung (2013)
     def algorithm2(alpha):
         L = cholesky(Prior(alpha))
         Rd1L = Rd1 @ L
@@ -73,7 +79,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
         cost = (r**2)/(sig**2) + (N-n)*log(sig**2) + 2*log(det(R1)+1e-6)
         return cost
 
-    #minimize cost function to estimate the impulse response
+    #minimize Algorithm 2 to estimate the impulse response with scipy optimization
     if(RegularizationKernel!='none'):
         A = minimize(algorithm2, alpha_init, method='L-BFGS-B', bounds=bnds)
         alpha = A.x
@@ -90,6 +96,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     ir = ir.reshape(len(ir),1)
     return ir
 
+#function that creates alpha according to the chosen regularization kernel
 def create_alpha(RegularizationKernel):
     l = 0.8
     p = 0.5
@@ -103,6 +110,7 @@ def create_alpha(RegularizationKernel):
     elif(RegularizationKernel=='none'):
         return None
 
+#function to create the bounds of the minimization according to the chosen regularization kernel
 def create_bounds(RegularizationKernel):
     if(RegularizationKernel=='DC'):
         bnds = ((1e-8, None), (0.72, 0.99), (-0.99, 0.99))
@@ -113,6 +121,7 @@ def create_bounds(RegularizationKernel):
     elif(RegularizationKernel=='none'):
         return None
 
+#function to create the Phi regressor matrix
 def create_Phi(u,n,N):
     Phi = zeros((n,N-n))
     for i in range(n):
@@ -120,12 +129,14 @@ def create_Phi(u,n,N):
             Phi[i,j] = u[n+j-i]
     return Phi
 
+#functino to create the Y regressor vector
 def create_Y(y,n,N):
     Y = zeros((N-n,1))
     for i in range(N-n):
         Y[i,0] = y[n+i]
     return Y
 
+#function to check all the arguments entered by the user, raising execption if something is wrong
 def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
     if(PreFilter!='none' and RegularizationKernel!='none'):
         raise Exception("Prewhitening filter can only be used in the non-regularized estimation.")
@@ -140,28 +151,38 @@ def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
         raise Exception("the chosen regularization kernel is not valid.")
 
     if(PreFilter not in ['zca', 'pca', 'cholesky', 'pca_cor', 'zca_cor', 'none']):
-        raise Exception("the chosen prewhitening method is not valid.")
+        raise Exception("the chosen prewhitening_matrixhitening method is not valid.")
 
     if(MinimizationMethod not in ['Powell', 'TNC', 'L-BFGS-B']):
         raise Exception("the chosen minimization method is not valid. Check scipy.minimize.optimize documentation for bound-constrained methods.")
 
     return None
 
-def whitening_matrix(X, assume_centered=False, method='cholesky', fudge=1e-8):   
-    # Make sure data is n_samples x n_features
-    X = X.reshape((-1, prod(X.shape[1:])))
+def whiten(x, method='cholesky'):
+    """Prewhitening of a discrete-time signal
 
-    # Center
-    X_centered = X
-    if not assume_centered:
-        X_centered = X - mean(X, axis=0)
+    This function applies what is proposed in A. Kessy et al (2015)
+    to whiten a discrete-time signal. The inputs are:
+    - x [numpy array]: discrete-time signal (size Nx1);
+    - method [str]: method used to create the W matrix, available options
+    are: 'zca', 'pca', 'cholesky', 'zca_cor', 'pca_cor'.
+    """
+    x = x.reshape((-1, prod(x.shape[1:])))
+    x = x - mean(x)
+    W = create_whiteningmatrix(x, method=method)
+    z = x @ W.T
+    z = z.reshape(x.shape)
+    
+    return z
 
-    cov = X_centered.T @ X_centered / X_centered.shape[0]
+#function to create the whitening matrix according to A. Kessy et al (2015)
+def create_whiteningmatrix(x, method='cholesky'):   
+    covx = x.T @ x / len(x)
 
     if method in ['zca', 'pca', 'cholesky']:
-        U, sigma, _ = svd(cov)
-        U = U @ diag(sign(diag(U)))  # Fix sign ambiguity
-        invsqrt_sigma = diag(1.0 / sqrt(sigma + fudge))
+        U, sigma, _ = svd(covx)
+        U = U @ diag(sign(diag(U)))
+        invsqrt_sigma = diag(1.0 / sqrt(sigma + 1e-8))
         if method == 'zca':
             W = U @ invsqrt_sigma @ U.T
         elif method == 'pca':
@@ -169,31 +190,16 @@ def whitening_matrix(X, assume_centered=False, method='cholesky', fudge=1e-8):
         elif method == 'cholesky':
             W = cholesky(U @ diag(1.0 / sigma) @ U.T,)
     elif method in ['zca_cor', 'pca_cor']:
-        stds = sqrt(diag(cov))
-        corr = cov / outer(stds, stds)
+        stds = sqrt(diag(covx))
+        corr = covx / outer(stds, stds)
         G, theta, _ = svd(corr)
-        G = G @ diag(sign(diag(G)))  # Fix sign ambiguity
-        invsqrt_theta = diag(1.0 / sqrt(theta + fudge))
+        G = G @ diag(sign(diag(G)))
+        invsqrt_theta = diag(1.0 / sqrt(theta + 1e-8))
         if method == 'zca_cor':
             W = G @ invsqrt_theta @ G.T @ diag(1 / stds)
         elif method == 'pca_cor':
             W = invsqrt_theta @ G.T @ diag(1 / stds)
     else:
-        raise ValueError(f'Whitening method {method} not found.')
+        raise Exception("Unvalid whitening method.")
 
     return W
-
-
-def whiten(X, assume_centered=False, method='cholesky', fudge=1e-8):
-    # Center
-    X_centered = X
-    if not assume_centered:
-        X_centered = X - mean(X, axis=0)
-
-    W = whitening_matrix(
-        X_centered, assume_centered=True, method=method, fudge=fudge
-    )
-    Z = X_centered @ W.T
-    Z = Z.reshape(X.shape)
-    
-    return Z
