@@ -19,7 +19,3 @@ from impulseest import impulseest
 ## Contributor
 
 Luan Vinícius Fiorio - vfluan@gmail.com
-
-## Observation
-
-This is a test release.
