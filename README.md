@@ -8,8 +8,18 @@ The six arguments in this function are: <br />
     - n [int]: number of impulse response estimates (default is n=100); <br />
     - RegularizationKernel [str]: regularization method ('DC','DI','TC', default is 'none'); <br />
     - PreFilter [str]: prewhitening filter method ('zca', 'pca', 'cholesky', 'pca_cor', 'zca_cor', default is 'none'); <br />
-    - MinimizationMethod [str]: bound-constrained optimization method use to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
+    - MinimizationMethod [str]: bound-constrained optimization method used to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
 
 ## Importing function
 
+```
 from impulseest import impulseest
+```
+
+## Contributor
+
+Luan Vinícius Fiorio - vfluan@gmail.com
+
+## Observation
+
+This is a test release.

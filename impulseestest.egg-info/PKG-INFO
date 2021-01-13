@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: impulseestest
-Version: 0.0.17
+Version: 0.1.1
 Summary: Nonparametric impulse response estimation
 Home-page: https://github.com/LVF784/impulseest
 Author: Luan V. Fiorio
@@ -20,7 +20,17 @@ Description: # impulseest() is a nonparametric impulse response estimation funct
         
         ## Importing function
         
+        ```
         from impulseest import impulseest
+        ```
+        
+        ## Contributor
+        
+        Luan Vinícius Fiorio - vfluan@gmail.com
+        
+        ## Observation
+        
+        This is a test release.
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
