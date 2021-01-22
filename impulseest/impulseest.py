@@ -3,9 +3,8 @@ from numpy.linalg import pinv, qr, det, cholesky
 from scipy.optimize import minimize
 
 from impulseest.creation import create_alpha, create_bounds, create_Phi, create_Y
-from impulseest.whiten import whiten
 
-def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', MinimizationMethod='L-BFGS-B'):
+def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-BFGS-B'):
     """Nonparametric impulse response estimation function
 
     This function estimates the impulse response with (optional) regularization.
@@ -16,7 +15,6 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     - y [numpy array]: output signal (size Nx1);
     - n [int]: number of impulse response estimates (default is n=100);
     - RegularizationKernel [str]: regularization method ('DC','DI','TC','SS', default is 'none');
-    - PreFilter [str]: prewhitening filter method ('zca', 'pca', 'cholesky', 'pca-cor', 'zca-cor', default is 'none');
     - MinimizationMethod: bound-constrained optimization method use to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
    """
 
@@ -26,12 +24,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     N = len(y)  #length of input-output vectors
     
     #check the arguments entered by the user, raise exceptions if something is wrong
-    argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod)
-
-    #if PreFilter is selected, then apply prewhitening filtering to u and y
-    if(PreFilter!='none'):
-        u = whiten(u,method=PreFilter)
-        y = whiten(y,method=PreFilter)
+    argument_check(u,y,n,N,RegularizationKernel,MinimizationMethod)
 
     #arrange the regressors to least-squares according to T. Chen et al (2012)
     Phi = create_Phi(u,n,N)
@@ -100,10 +93,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', PreFilter='none', Minim
     return ir
 
 #function to check all the arguments entered by the user, raising execption if something is wrong
-def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
-    if(PreFilter!='none' and RegularizationKernel!='none'):
-        raise Exception("Prewhitening filter can only be used in the non-regularized estimation.")
-    
+def argument_check(u,y,n,N,RegularizationKernel,MinimizationMethod):
     if(len(u)!=len(y)):
         raise Exception("u and y must have the same size.")
 
@@ -112,9 +102,6 @@ def argument_check(u,y,n,N,PreFilter,RegularizationKernel,MinimizationMethod):
 
     if(RegularizationKernel not in ['DC','DI','TC','none']):
         raise Exception("the chosen regularization kernel is not valid.")
-
-    if(PreFilter not in ['zca', 'pca', 'cholesky', 'pca_cor', 'zca_cor', 'none']):
-        raise Exception("the chosen prewhitening_matrixhitening method is not valid.")
 
     if(MinimizationMethod not in ['Powell', 'TNC', 'L-BFGS-B']):
         raise Exception("the chosen minimization method is not valid. Check scipy.minimize.optimize documentation for bound-constrained methods.")
