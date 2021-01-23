@@ -1,15 +1,17 @@
 from numpy import zeros, array
 
 #function that creates alpha according to the chosen regularization kernel
-def create_alpha(RegularizationKernel):
+def create_alpha(RegularizationKernel,sig):
     l = 0.8
     p = 0.5
-    c = 1     
+    c = 1   
+    s = sig
+
     if(RegularizationKernel=='DC'):
-        alpha_init = array([c,l,p])
+        alpha_init = array([c,l,p,s])
         return alpha_init
     elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
-        alpha_init = array([c,l])     
+        alpha_init = array([c,l,s])     
         return alpha_init         
     elif(RegularizationKernel=='none'):
         return None
@@ -17,10 +19,10 @@ def create_alpha(RegularizationKernel):
 #function to create the bounds of the minimization according to the chosen regularization kernel
 def create_bounds(RegularizationKernel):
     if(RegularizationKernel=='DC'):
-        bnds = ((1e-8, None), (0.72, 0.99), (-0.99, 0.99))
+        bnds = ((1e-8, None), (0.72, 0.99), (-0.99, 0.99), (0, None))
         return bnds
     elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
-        bnds = ((1e-8, None), (0.7, 0.99))
+        bnds = ((1e-8, None), (0.7, 0.99), (0, None))
         return bnds
     elif(RegularizationKernel=='none'):
         return None

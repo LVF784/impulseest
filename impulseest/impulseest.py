@@ -39,7 +39,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
     P = zeros((n,n))        #zero matrix
 
     #initialize alpha and choose bounds according to the chosen regularization kernel
-    alpha_init = create_alpha(RegularizationKernel)
+    alpha_init = create_alpha(RegularizationKernel,sig)
     bnds = create_bounds(RegularizationKernel)
 
     #function to create the regularization matrix
@@ -68,11 +68,11 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
     def algorithm2(alpha):
         L = cholesky(Prior(alpha))
         Rd1L = Rd1 @ L
-        to_qr = bmat([[Rd1L,Rd2],[sig*I,zeros((n,1))]])
+        to_qr = bmat([[Rd1L,Rd2],[alpha[len(alpha)-1]*I,zeros((n,1))]])
         R = qr(to_qr,mode='r')
         R1 = R[0:n,0:n]
         r = R[n,n]
-        cost = (r**2)/(sig**2) + (N-n)*log(sig**2) + 2*log(det(R1)+1e-6)
+        cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*log(det(R1)+1e-8)
         return cost
 
     #minimize Algorithm 2 to estimate the impulse response with scipy optimization
@@ -81,7 +81,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
         alpha = A.x
         L = cholesky(Prior(alpha))
         Rd1L = Rd1 @ L
-        to_qr = bmat([[Rd1L,Rd2],[sig*I,zeros((n,1))]])
+        to_qr = bmat([[Rd1L,Rd2],[alpha[len(alpha)-1]*I,zeros((n,1))]])
         R = qr(to_qr,mode='r')
         R1 = R[0:n,0:n]
         R2 = R[0:n,n]
