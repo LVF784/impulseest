@@ -1,4 +1,4 @@
-from numpy import zeros, identity, transpose, std, hstack, bmat, log, convolve
+from numpy import zeros, identity, transpose, std, hstack, bmat, log
 from numpy.linalg import pinv, qr, det, cholesky
 from scipy.optimize import minimize
 
@@ -31,8 +31,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
     Y = create_Y(y,n,N)
     
     #calculate impulse response without regularization
-    ir_ls = pinv(Phi @ transpose(Phi)) @ Phi @ Y 
-    ir_ls = ir_ls.reshape(len(ir_ls),1)   
+    ir_ls = pinv(Phi @ transpose(Phi)) @ Phi @ Y    
 
     #initialize variables for hyper-parameter estimation
     I = identity(n)         #identitity matrix
@@ -59,48 +58,25 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
                     None            
         return P
 
+    #precomputation for the Algorithm 2 according to T. Chen, L. Ljung (2013)
+    aux0 = qr(hstack((transpose(Phi),Y)),mode='r')
+    Rd1 = aux0[0:n+1,0:n]
+    Rd2 = aux0[0:n+1,n]
+    Rd2 = Rd2.reshape(len(Rd2),1)
+
+    #cost function written as the Algorithm 2 presented in T. Chen, L. Ljung (2013)
+    def algorithm2(alpha):
+        L = cholesky(Prior(alpha))
+        Rd1L = Rd1 @ L
+        to_qr = bmat([[Rd1L,Rd2],[alpha[len(alpha)-1]*I,zeros((n,1))]])
+        R = qr(to_qr,mode='r')
+        R1 = R[0:n,0:n]
+        r = R[n,n]
+        cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*log(det(R1)+1e-8)
+        return cost
+
+    #minimize Algorithm 2 to estimate the impulse response with scipy optimization
     if(RegularizationKernel!='none'):
-        
-        ir_ls = ir_ls.reshape(len(ir_ls))
-        u = u.reshape(len(u))
-
-        yb = convolve(u, ir_ls) #base-line model
-        yb = yb.reshape(len(yb),1)
-
-        ir_ls = ir_ls.reshape(len(ir_ls),1)
-        u = u.reshape(len(u),1)      
-
-        if(len(yb)>len(y)):
-            yb = yb[0:len(y),0]
-        else:
-            y = y[0:len(yb),0]            
-
-        N = len(y)
-        u = u[0:N,0]
-        Phi = create_Phi(u,n,N)
-
-        yr = zeros((N,1))
-        for i in range(N):
-            yr[i,0] = y[i] - yb[i] #residual output to regularized identification       
-        Yr = create_Y(yr,n,N)
-
-        #precomputation for the Algorithm 2 according to T. Chen, L. Ljung (2013)
-        aux0 = qr(hstack((transpose(Phi),Yr)),mode='r')
-        Rd1 = aux0[0:n+1,0:n]
-        Rd2 = aux0[0:n+1,n]
-        Rd2 = Rd2.reshape(len(Rd2),1)
-
-        #cost function written as the Algorithm 2 presented in T. Chen, L. Ljung (2013)
-        def algorithm2(alpha):
-            L = cholesky(Prior(alpha))
-            Rd1L = Rd1 @ L
-            to_qr = bmat([[Rd1L,Rd2],[alpha[len(alpha)-1]*I,zeros((n,1))]])
-            R = qr(to_qr,mode='r')
-            R1 = R[0:n,0:n]
-            r = R[n,n]
-            cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*log(det(R1)+1e-8)
-            return cost
-
         A = minimize(algorithm2, alpha_init, method='L-BFGS-B', bounds=bnds)
         alpha = A.x
         L = cholesky(Prior(alpha))
@@ -109,16 +85,11 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
         R = qr(to_qr,mode='r')
         R1 = R[0:n,0:n]
         R2 = R[0:n,n]
-        ir_r = L @ pinv(R1) @ R2
-
-        ir_r = ir_r.reshape(len(ir_r),1)
-        ir_ls = ir_ls.reshape(len(ir_ls),1)
-
-        ir = ir_ls + ir_r
-
+        ir = L @ pinv(R1) @ R2
     else:
         ir = ir_ls
 
+    ir = ir.reshape(len(ir),1)
     return ir
 
 #function to check all the arguments entered by the user, raising execption if something is wrong
