@@ -1,11 +1,11 @@
-from numpy import zeros, identity, transpose, std, hstack, bmat, log, convolve
+from numpy import zeros, identity, transpose, std, hstack, bmat, log, convolve, diag
 from numpy.linalg import pinv, qr, det, cholesky
 from scipy.optimize import minimize
 
 from impulseest.creation import create_alpha, create_bounds, create_Phi, create_Y
 
 def impulseest(u, y, n=100, RegularizationKernel='none', BaseLine=False, MinimizationMethod='L-BFGS-B'):
-    """Nonparametric impulse response estimation function with only input-output data
+    """Nonparametric impulse response estimation function
 
     This function estimates the impulse response with (optional) regularization.
     The variance increases linearly with the finite impulse response model order, 
@@ -15,7 +15,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', BaseLine=False, Minimiz
     - y [numpy array]: output signal (size Nx1);
     - n [int]: number of impulse response estimates (default is n=100);
     - RegularizationKernel [str]: regularization method ('DC','DI','TC','SS', default is 'none');
-    - BaseLine [bool]: if True, a base-line model is used to identify most of the impulse response (default is false). Recommended to use in cases where the impulse response decays slowly;
+    - BaseLine [bool]: if True, a base-line model is used to identify most of the impulse response. Recommended to use in cases where the impulse response decays slowly;
     - MinimizationMethod[str]: bound-constrained optimization method use to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
    """
 
@@ -84,7 +84,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', BaseLine=False, Minimiz
             R = qr(to_qr,mode='r')
             R1 = R[0:n,0:n]
             r = R[n,n]
-            cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*log(det(R1)+1e-8)
+            cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*sum(log(abs(diag(R1))))    
             return cost
 
         A = minimize(algorithm2, alpha_init, method='L-BFGS-B', bounds=bnds)
@@ -117,7 +117,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', BaseLine=False, Minimiz
             R = qr(to_qr,mode='r')
             R1 = R[0:n,0:n]
             r = R[n,n]
-            cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*log(det(R1)+1e-8)
+            cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*sum(log(abs(diag(R1))))
             return cost
 
         A = minimize(algorithm2, alpha_init, method='L-BFGS-B', bounds=bnds)

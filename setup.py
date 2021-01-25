@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="impulseest",
-    version="0.5",
+    version="0.7",
     author="Luan V. Fiorio",
     author_email="vfluan@gmail.com",
     description="nonparametric impulse response estimation using only input-output data",
