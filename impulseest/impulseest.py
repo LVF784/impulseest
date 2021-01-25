@@ -56,6 +56,12 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
                         P[k,j] = 0
                 elif(RegularizationKernel=='TC'):
                     P[k,j] = alpha[0]*min(alpha[1]**j,alpha[1]**k)
+                elif(RegularizationKernel=='SS'):
+                    if(k>=j):
+                        P[k,j] = alpha[0]*((alpha[1]**(2*k))/2)*((alpha[1]**j)-(alpha[1]**k)/3)
+                    else:
+                        P[k,j] = alpha[0]*((alpha[1]**(2*j))/2)*((alpha[1]**k)-(alpha[1]**j)/3)
+                else:
                     None            
         return P
 
@@ -129,7 +135,7 @@ def argument_check(u,y,n,N,RegularizationKernel,MinimizationMethod):
     if(n>=N):
         raise Exception("n must be at least 1 sample smaller than the length of the signals.")
 
-    if(RegularizationKernel not in ['DC','DI','TC','none']):
+    if(RegularizationKernel not in ['DC','DI','TC','SS','none']):
         raise Exception("the chosen regularization kernel is not valid.")
 
     if(MinimizationMethod not in ['Powell', 'TNC', 'L-BFGS-B']):
