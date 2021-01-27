@@ -10,7 +10,7 @@ def create_alpha(RegularizationKernel,sig):
     if(RegularizationKernel=='DC'):
         alpha_init = array([c,l,p,s])
         return alpha_init
-    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC' or RegularizationKernel=='SS'):
+    elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
         alpha_init = array([c,l,s])     
         return alpha_init         
     elif(RegularizationKernel=='none'):
@@ -23,9 +23,6 @@ def create_bounds(RegularizationKernel):
         return bnds
     elif(RegularizationKernel=='DI' or RegularizationKernel=='TC'):
         bnds = ((1e-8, None), (0.7, 0.99), (0, None))
-        return bnds
-    elif(RegularizationKernel=='SS'):
-        bnds = ((1e-8, None), (0.9, 0.99), (0, None))
         return bnds        
     elif(RegularizationKernel=='none'):
         return None

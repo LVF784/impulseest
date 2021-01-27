@@ -6,9 +6,8 @@ The six arguments in this function are: <br />
     - u [NumPy array]: input signal (size Nx1); <br />
     - y [NumPy array]: output signal (size Nx1); <br />
     - n [int]: number of impulse response estimates (default is n=100); <br />
-    - RegularizationKernel [str]: regularization method ('DC','DI','TC','SS', default is 'none'); <br />
-    - BaseLine [bool]: if True, a base-line model is used to identify most of the impulse response (default is False). Recommended to use in cases where the impulse response decays very slowly; <br />
-    - MinimizationMethod[str]: bound-constrained optimization method use to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
+    - RegularizationKernel [str]: regularization method ('DC','DI','TC', default is 'none'); <br />
+    - MinimizationMethod[str]: bound-constrained optimization method used to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
 
 The function returns a NumPy array of size nx1 with all the n impulse response estimates.
 
