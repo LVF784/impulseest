@@ -42,13 +42,13 @@ evalg = sum(numG1)/sum(denG1)
 numG1 = np.dot(numG1,(1/evalg))
 G = ss.TransferFunction(numG1,denG1,dt=Ta)
 
-
 #---------------------------------------------------------------
 #input-output signals-------------------------------------------
 #---------------------------------------------------------------
 u = r
 _,y = ss.dlsim(G,u,t)
 
+#including noise
 nu = 0.1*np.random.normal(0, .1, u.shape)
 ny = 0.2*np.random.normal(0, .1, y.shape)
 
@@ -76,7 +76,7 @@ summer = np.sum(square)
 mse = (1/len(ir_est))*summer        
 
 print("\n")
-print("An MSE of {} was obtained using {} kernel and it took {:2f} seconds." .format(mse,reg,(end_time-start_time)))
+print("An MSE of {} was obtained using {} kernel and it took {:.2f} seconds." .format(mse,reg,(end_time-start_time)))
 print("\n")
 
 #plotting results

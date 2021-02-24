@@ -5,17 +5,18 @@ from scipy.optimize import minimize
 from impulseest.creation import create_alpha, create_bounds, create_Phi, create_Y
 
 def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-BFGS-B'):
-    """Nonparametric impulse response estimation function
+    """Non-parametric impulse response estimation with input-output data
 
-    This function estimates the impulse response with (optional) regularization.
+    This function estimates the impulse response with regularization or not. 
     The variance increases linearly with the finite impulse response model order, 
-    so this need to be counteracted by regularization. Prewhitening filtering is
-    also optional. The six arguments in this function are:
-    - u [numpy array]: input signal (size Nx1);
-    - y [numpy array]: output signal (size Nx1);
-    - n [int]: number of impulse response estimates (default is n=100);
+    effect that can be countered by regularizing the estimative. The six arguments 
+    in this function are:
+    - u [numpy array]: input signal (size N x 1);
+    - y [numpy array]: output signal (size N x 1);
+    - n [int]: number of impulse response estimates (default is n = 100);
     - RegularizationKernel [str]: regularization method ('DC','DI','TC', default is 'none');
     - MinimizationMethod[str]: bound-constrained optimization method use to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
+    It returns a numpy array of size n x 1 containing the impulse response estimates.
    """
 
     #make sure u and y are shaped correctly
@@ -68,7 +69,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
         Rd2 = Rd2.reshape(len(Rd2),1)
 
         #cost function written as the Algorithm 2 presented in T. Chen, L. Ljung (2013)
-        def algorithm2(alpha):
+        def cost_func(alpha):
             L = cholesky(Prior(alpha))
             Rd1L = Rd1 @ L
             to_qr = bmat([[Rd1L,Rd2],[alpha[len(alpha)-1]*I,zeros((n,1))]])
@@ -78,7 +79,7 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
             cost = (r**2)/(alpha[len(alpha)-1]**2) + (N-n)*log(alpha[len(alpha)-1]**2) + 2*sum(log(abs(diag(R1))))
             return cost
 
-        A = minimize(algorithm2, alpha_init, method='L-BFGS-B', bounds=bnds)
+        A = minimize(cost_func, alpha_init, method=MinimizationMethod, bounds=bnds)
         alpha = A.x
         L = cholesky(Prior(alpha))
         Rd1L = Rd1 @ L
