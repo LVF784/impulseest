@@ -12,7 +12,7 @@ from random import choice
 N = 1000
 Ta = 1*10**(-3)
 
-#creating prbs signal
+#prbs
 def prbs():
     while True:
         yield choice([False,True])
@@ -46,9 +46,9 @@ G = ss.TransferFunction(numG1,denG1,dt=Ta)
 #input-output signals-------------------------------------------
 #---------------------------------------------------------------
 u = r
-_,y = ss.dlsim(G,u,t)
+t,y = ss.dlsim(G,u,t)
 
-#including noise
+#noise
 nu = 0.1*np.random.normal(0, .1, u.shape)
 ny = 0.2*np.random.normal(0, .1, y.shape)
 
@@ -67,7 +67,7 @@ start_time = time.time()
 ir_est = impulseest(u,y,n=100,RegularizationKernel=reg)
 end_time = time.time()
 
-#calculating MSE
+#MSE
 sub = np.zeros(len(ir_est))
 for k in range(len(ir_est)):
     sub[k] = (ir_real[k]-ir_est[k])**2
@@ -79,8 +79,8 @@ print("\n")
 print("An MSE of {} was obtained using {} kernel and it took {:.2f} seconds." .format(mse,reg,(end_time-start_time)))
 print("\n")
 
-#plotting results
-plt.figure(1)
+#plotting result
+plt.figure()
 plt.plot(ir_real,color='C0')
 plt.plot(ir_est,linestyle='--',color='C1')
 plt.legend(['Real IR','Estimated IR'])
