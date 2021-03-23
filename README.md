@@ -6,8 +6,8 @@ The six arguments in this function are: <br />
     - u [NumPy array]: input signal (size N x 1); <br />
     - y [NumPy array]: output signal (size N x 1); <br />
     - n [integer]: number of impulse response estimates (default is n = 100); <br />
-    - RegularizationKernel [string]: regularization method - 'none', 'DC','DI','TC' (default is 'none'); <br />
-    - MinimizationMethod [string]: bound-constrained optimization method used to minimize the cost function - 'L-BFGS-B', 'Powell','TNC' (default is 'L-BFGS-B').
+    - RegularizationKernel [string]: regularization method - 'none', 'DC', 'DI', 'TC' (default is 'none'); <br />
+    - MinimizationMethod [string]: bound-constrained optimization method used to minimize the cost function - 'L-BFGS-B', 'Powell', 'TNC' (default is 'L-BFGS-B').
 
 The impulseest function returns a NumPy array of size n x 1 containing all the n impulse response estimates.
 
