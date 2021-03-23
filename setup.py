@@ -8,7 +8,7 @@ setuptools.setup(
     version="1.0",
     author="Luan V. Fiorio",
     author_email="vfluan@gmail.com",
-    description="non-parametric impulse response estimation using only input-output data",
+    description="non-parametric impulse response estimation with input-output data",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/LVF784/impulseest",

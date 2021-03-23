@@ -9,15 +9,14 @@ def impulseest(u, y, n=100, RegularizationKernel='none', MinimizationMethod='L-B
 
     This function estimates the impulse response with regularization or not. 
     The variance increases linearly with the finite impulse response model order, 
-    effect that can be countered by regularizing the estimative.
-    Input arguments:
-    - u [NumPy array]: input signal (size N x 1);
-    - y [NumPy array]: output signal (size N x 1);
-    - n [integer]: number of impulse response estimates (default is n = 100);
-    - RegularizationKernel [string]: regularization method - 'none', 'DC','DI','TC' (default is 'none');
-    - MinimizationMethod [string]: bound-constrained optimization method used to minimize the cost function - 'L-BFGS-B', 'Powell','TNC' (default is 'L-BFGS-B').
-    Output:
-    - ir [NumPy array]: estimated impulse response (size n x 1).
+    effect that can be countered by regularizing the estimative. The six arguments 
+    in this function are:
+    - u [numpy array]: input signal (size N x 1);
+    - y [numpy array]: output signal (size N x 1);
+    - n [int]: number of impulse response estimates (default is n = 100);
+    - RegularizationKernel [str]: regularization method ('DC','DI','TC', default is 'none');
+    - MinimizationMethod[str]: bound-constrained optimization method use to minimize the cost function ('Powell','TNC', default is 'L-BFGS-B').
+    It returns a numpy array of size n x 1 containing the impulse response estimates.
    """
 
     #make sure u and y are shaped correctly

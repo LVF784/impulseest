@@ -1,4 +1,4 @@
-# impulseest() is a nonparametric impulse response estimation function relying solely on input-output data
+# impulseest() is a non-parametric impulse response estimation function with input-output data
 
 As the variance increases linearly with the finite impulse response (FIR) model order, it is important for higher order FIR models to counteract this situation by regularizing the estimative. In impulseest(), this is done as proposed in T. Chen et al [2012] using the Empirical Bayes method (Carlin and Louis [1996]).
 
@@ -19,7 +19,7 @@ from impulseest import impulseest
 
 ### Example
 
-Check example folder. Basic use:
+For a detailed example, please check the example folder. Basic usage:
 
 ```Python
 ir_est = impulseest(u,y,n=100,RegularizationKernel='DC')
