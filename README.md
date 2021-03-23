@@ -17,7 +17,7 @@ The impulseest function returns a NumPy array of size n x 1 containing all the n
 from impulseest import impulseest
 ```
 
-### Example
+## Example
 
 For a detailed example, please check the example folder. Basic usage:
 
