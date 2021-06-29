@@ -28,3 +28,5 @@ ir_est = impulseest(u,y,n=100,RegularizationKernel='DC')
 ## Contributor
 
 Luan Vinícius Fiorio - vfluan@gmail.com
+
+![Image of impulseest](https://github.com/LVF784/impulseest/blob/master/impulseest_jpeg.jpeg)
