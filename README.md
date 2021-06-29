@@ -30,5 +30,5 @@ ir_est = impulseest(u,y,n=100,RegularizationKernel='DC')
 Luan Vinícius Fiorio - vfluan@gmail.com
 
 <p align="center">
-![Image of impulseest](https://github.com/LVF784/impulseest/blob/master/impulseest_jpeg.jpeg)
+  <img width="460" height="300" src="https://github.com/LVF784/impulseest/blob/master/impulseest_jpeg.jpeg">
 </p>
