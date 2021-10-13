@@ -9,7 +9,7 @@ The six arguments in this function are: <br />
     - RegularizationKernel [string]: regularization method - 'none', 'DC', 'DI', 'TC' (default is 'none'); <br />
     - MinimizationMethod [string]: bound-constrained optimization method used to minimize the cost function - 'L-BFGS-B', 'Powell', 'TNC' (default is 'L-BFGS-B').
 
-The impulseest function returns a NumPy array of size n x 1 containing all the n impulse response estimates.
+The impulseest function returns a NumPy array of size n x 1 containing all the n impulse response estimates. See https://www.sciencedirect.com/science/article/pii/S2352711021000832 for more details.
 
 ## Importing
 
